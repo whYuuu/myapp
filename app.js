@@ -200,7 +200,7 @@ app.put('/users/:id',isLoggedIn,checkUserRegValidation,function(req,res){
 app.get('/posts',function(req,res){
   Post.find({}).populate("author").sort('-createdAt').exec(function(err,posts){
     if(err) return res.json({success:false, message:err});
-    res.render('posts/index',{data:posts, user:req.user});
+    res.render('posts/index',{posts:posts, user:req.user});
   });
 });
 //new
@@ -219,37 +219,31 @@ app.post('/posts',isLoggedIn,function(req,res){
 app.get('/posts/:id',function(req,res){
   Post.findById(req.params.id).populate('author').exec(function(err,post){
     if(err) return res.json({success:false, message:err});
-    res.render('posts/show',{data:post,user:req.user});
+    res.render('posts/show',{post:post,user:req.user});
   });
 });
 //Edit
 app.get('/posts/:id/edit',isLoggedIn,function(req,res){
   Post.findById(req.params.id,function(err,post){
       if(err) return res.json({success:false, message:err});
-      res.render('posts/edit',{data:post,user:req.user});
+      res.render('posts/edit',{post:post,user:req.user});
   });
 });
 //update
 app.put('/posts/:id',isLoggedIn,function(req,res){
   req.body.post.updatedAt = Date.now();
-  Post.findById(req.params.id,function(err,post){
+  Post.findOneAndUpdate({_id:req.params.id,author:req.user._id},req.body.post,function(err,post){
     if(err) return res.json({success:'false',message:err});
-    if(!req.user._id.equals(post.author)) return res.json({sucess:'false',message:"UnAuthrized Attempt!"});
-    Post.findByIdAndUpdate(req.params.id,req.body.post,function(err, post){
-      if(err) return res.json({success:false, message:err});
-      res.redirect('/posts/'+req.params.id);
-    });
+    if(!post) return res.json({success:'false',message:"No data found and update"});
+    res.redirect("/posts/"+req.params.id);
   });
 });
 //destroy
 app.delete('/posts/:id',isLoggedIn,function(req,res){
-  Post.findById(req.params.id,function(err,post){
+  Post.findOneAndRemove({_id:req.params.id,author:req.user._id},function(err,post){
     if(err) return res.json({success:'false',message:err});
-    if(!req.user._id.equls(post.author)) return res.json({sucess:'false',message:"UnAuthrized Attempt!"});
-    Post.findByIdAndRemove(req.params.id,function(err,post){
-      if(err) return res.json({success:false, message:err});
-      res.redirect("/posts");
-    });
+    if(!post) return res.json({success:'false',message:"No data found and remove"});
+    res.redirect("/posts");
   });
 });
 
