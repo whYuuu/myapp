@@ -4,29 +4,46 @@
     <% include ../partials/head %>
   </head>
   <body>
-      <header>
-        <% include ../partials/header %>
-      </header>
-      <div class="posts">
-        <% include ./partials/top %>
-        <!-- main start -->
+    <header>
+      <% include ../partials/header %>
+    </header>
+    <div class="posts">
+    <% include partials/top %>
+<!-- main start-->
 
-        <!-- views/posts/new.ejs -->
-        <div class="new">
-          <h3>new Post</h3>
-          <form class="posts_form" action="/posts" method="post">
-            <label>Title</label>
-            <input type="text" name="post[title]" value="">
-            <label>Body</label>
-            <textarea name="post[body]"></textarea>
-            <div class="float_right">Author : <%= user.nickname %></div>
-            <button type="submit">Submit</button>
-          </form>
-          <a href="javascript:history.back()"><button>Back</button></a>
-        <!-- main end   -->
+<!-- views/posts/index.ejs -->
+<div class="new">
+  <div class="buttons">
+    <a class="button" href="/posts<%= urlQuery('?') %>">Back</a>
+  </div>
+  <h3>New Post</h3>
+  <form class="checkValidation" action="/posts<%= urlQuery('?') %>" method="post">
+    <div class="inputs">
+      <div class="floats">
+        <label>Title</label>
+        <input class="cvRequired" type="text" name="post[title]" cvRqErrMsg="Title is required." cvRqErrTo="#cvErrTitle" value="">
+        <div id="cvErrTitle" class="message"></div>
       </div>
-      <footer>
-        <% include ../partials/footer %>
-      </footer>
+      <div class="floats">
+        <label>Author</label>
+        <input disabled type="text" value="<%= user.nickname %>">
+      </div>
+      <div class="floats">
+        <label>Body</label>
+        <textarea class="cvRequired" name="post[body]" cvRqErrMsg="Body is required." cvRqErrTo="#cvErrBody"></textarea>
+        <div id="cvErrBody" class="message"></div>
+      </div>
+    </div>
+    <div class="buttons">
+      <input class="button" type="submit" value="Submit">
+    </div>
+  </form>
+</div>
+
+<!-- main end -->
+    </div><!--posts end -->
+    <footer>
+      <% include ../partials/footer %>
+    </footer>
   </body>
 </html>
